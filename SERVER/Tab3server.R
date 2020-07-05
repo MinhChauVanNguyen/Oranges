@@ -173,6 +173,7 @@ observeEvent(input$calculation,{
                            Vitamin C intake is calculated as follows:</p>
                         $$\\textrm{mg intake} = \\frac{53.2 \\times \\textrm{No of Predicted Oranges}}{\\textrm{No of Family Member}}$$<script>MathJax.Hub.Queue(['Typeset', MathJax.Hub]);</script>"), 
               append = FALSE, style = "info")
+  jqui_draggable(selector = '.alert-info')
 })
 
 options(warn = -1) 

@@ -29,7 +29,7 @@ loginpage <- div(id = "loginpage",
         br(),
         tags$script(HTML("$('.box').eq(0).css('border', '1px solid #3DA0D1');")),
         fluidRow(box(width = NULL, div(style="color:black;margin-top:-10px;", htmlOutput(outputId = "disclaimer")))),
-        fluidRow(a(icon("github-alt", "fa-2x"), "Link to Github Repo", href = "https://github.com/MinhChauVanNguyen", style = "color:orange;"))
+        fluidRow(a(icon("github-alt", "fa-2x"), "Link to Github Repo", href = "https://github.com/MinhChauVanNguyen/Orange", style = "color:orange;"))
       ),
     column(4, offset = 1, style = "padding:0px; margin-top:-30px;",
       div(style = "width:300px; max-width:100%; margin-top:100px; padding:0px; border-radius:25px;",

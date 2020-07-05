@@ -60,7 +60,7 @@ observe({
 
 observeEvent(input$switchAlert,{
   if(input$switchAlert == "alerttwo"){
-    createAlert(session, anchorId = "instruction", alertId = "Alert1", title = HTML("<center>INSTRUCTIONS</center>"),
+    createAlert(session, anchorId = "instruction", alertId = "Alert1", title = HTML("<center><font size='40px'>INSTRUCTIONS</font></center>"),
                 content = HTML("<div class=alert alert-success role=alert style='color:black; text-align:left;'>
               <p> <span style='color:white;'>Choose a Family Name and use the </span><b>Press</b> <span style='color:white;'>button to obtain a dygraph of the<br> 
               fitted ARIMA model.</span> Users can also select a preferred forecast time period<br>

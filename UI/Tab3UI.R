@@ -9,6 +9,8 @@ tabPanel("Regression Model", value = 3,
           ),
            column(9, style = "margin-left:20px;", dygraphOutput(outputId = "PLOT3", width = "90%"))
          ),
+         br(),
+         br(),
          fluidRow(
            column(4, style="margin-right:-65px; margin-left:20px; margin-top:-20px;",
                   br(),
@@ -27,7 +29,9 @@ tabPanel("Regression Model", value = 3,
                                       fgColor = "#FF8C00", inputColor = "#FF8C00")))),
            column(6, offset = 1, style = "margin-bottom:50px; padding-left:40px;",
                   fluidRow(plotlyOutput(outputId = "gvis", height = "300px")),
-                  fluidRow(p("The above line chart shows the accuracy of the fitted Regression line used for modelling the data."))
+                  fluidRow(div(style = "margin-left:30px;margin-top:25px;", 
+                   p("The above line chart shows the accuracy of 
+                      the fitted Regression line used for modelling the data.")))
            )
          ),
          

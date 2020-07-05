@@ -209,12 +209,12 @@ th {
 
 /* Drop down button */
 .btn-custom {
-  background-color:#BF00FF; 
-  color: #FFF;
+  background-color:orange; 
+  color: #FFFFFF;
 }
 
 #dropdown-menu-dropdown {
-  background-color:red;
+  background-color:#F0F8FF;
 }
 
 /* Select-Input in Tab 1 */
@@ -253,7 +253,7 @@ th {
 
 /* Highlight color */
 mark{
-  background-color: rgb(255,182,193, 0.4);
+  background-color: rgba(255,105,180,0.5);
   color:black;
 }
 

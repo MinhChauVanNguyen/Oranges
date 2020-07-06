@@ -1,22 +1,31 @@
 output$sidebar <- renderUI({
-  if(USER$login == TRUE){
-    shinyjs::removeClass(selector = "body", class = "sidebar-collapse")
+  # if(USER$login == TRUE){
+  #   shinyjs::removeClass(selector = "body", class = "sidebar-collapse")
     dashboardSidebar(
       div(style="text-align:center !important;", img(src = "orange2.png", height = "50px")),
       br(),
-      conditionalPanel(condition="input.tabs==1 || input.tabs==3", 
+      conditionalPanel(condition = "input.sidebarmenu=='tabTwo' || input.sidebarmenu == 'tabThree'",
                        div(style="color:white",
                            uiOutput(outputId = "DATA"))
       ),
+      conditionalPanel(condition = "input.sidebarmenu=='tabOne'",
+                     h4("Time Series Analysis"),
+                     br()
+      ),
       conditionalPanel(condition = "input.tabs==1",
-                       br(),
-                       sidebarMenu(id = "sidebarmenu", sidebarMenuOutput(outputId = "menu"))
+                       sidebarMenu(sidebarMenuOutput(outputId = "menu")),
+                       br()
       ),
       conditionalPanel(condition="input.tabs==2",
                        div(style="color:white", uiOutput(outputId = "DATA2")),
                        actionButton(inputId = "press", label = "Press"),
                        actionButton(inputId = "subset", label = "Subset"),
-                       div(style="color:white;", uiOutput(outputId = "HORIZON")),
+                       div(style="color:white;",
+                           selectInput(inputId = "horizon", 
+                                          label = HTML("Horizon", as.character(div(style="display:inline-block; margin-left:-5px;", actionLink(inputId = 'RESET', label = '(reset)', icon("sync-alt"))))),
+                                          choices = c("Forecast in months" = "", 6, 12, 24)
+                       )),
+                       bsPopover(id = "horizon", title = "", content = "Hold up", placement = "right"),
                        radioGroupButtons(
                          inputId = "switchAlert", label = NULL, justified = TRUE,
                          choiceNames = c(
@@ -43,6 +52,7 @@ output$sidebar <- renderUI({
                        )
       ),
       conditionalPanel(condition="input.tabs==3",
+                       div(style="color:white", uiOutput(outputId = "DATA3")),
                        br(),
                        withMathJax(),
                        div(style = "margin-top:-15px; margin-bottom:-15px;",
@@ -55,11 +65,9 @@ output$sidebar <- renderUI({
                        uiOutput(outputId = "TYPE"),
       ),
       br(),
-      #div(style="margin-left:40px;", uiOutput(outputId = "logoutbtn")),
-      br(),
       div(menuItemOutput(outputId = "times"), style = "color:white;")
     )
-  }else{
-    shinyjs::addClass(selector = "body", class = "sidebar-collapse")
-  }
+  # }else{
+  #   shinyjs::addClass(selector = "body", class = "sidebar-collapse")
+  # }
 })

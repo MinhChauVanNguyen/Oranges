@@ -1,54 +1,36 @@
-isolate({updateTabItems(session, "sidebarmenu", "tabOne")})
-
-output$yearly1 <- renderValueBox({
-  datafrme <- datasetInput()
-  highValue(datafrme = datafrme, year = 2017)
+isolate({
+  updateTabItems(session, "sidebarmenu", "tabOne")
 })
 
-output$yearly2 <- renderValueBox({
-  datafrme <- datasetInput()
-  highValue(datafrme = datafrme, year = 2016)
+output$DATA <- renderUI({
+  selectInput(inputId = "Names",
+              label = "Choose a Family Name", selectize = FALSE,
+              choices = sort(unique(factor(orange$Name))))
 })
 
-output$yearly3 <- renderValueBox({
-  datafrme <- datasetInput()
-  highValue(datafrme = datafrme, year = 2015)
+datasetInput <- reactive({
+  inputdata <- orange[orange$Name == req(input$Names), ]
 })
 
-################################# Tab Item 2 ######################################
-
-output$OUT <- renderUI({
-  HTML(paste0("<mark>", "Summary table for the Family selected", 
-              "</mark>"))
+tsdata <- reactive({
+  inputdata <- datasetInput()
+  tsdata <- ts(inputdata$Total, frequency = 12,
+               start = c(min(inputdata$Year), min(inputdata[inputdata$Year == min(inputdata$Year), "Month"])))
 })
 
-output$TABLE <-  DT::renderDataTable({
-  orange <- datasetInput()
-  oranges <- orange[!(names(orange) %in% c("X", "Region", "long", "lat"))]
-  DT::datatable(oranges, rownames = FALSE, escape = FALSE,
-                caption = htmltools::tags$caption("Table: Family", input$Names,
-                                                  style = "caption-side:bottom; text-align:center;"),
-                options = list(lengthMenu = c(5,10,15,20),
-                               scrollX = TRUE,
-                               searching = TRUE,
-                               pagingType = "simple",
-                               language = list(info = '_TOTAL_ records', 
-                                               paginate = list(previous = 'Back', `next` = 'Forward')))
-  )
-})
-
+################################# Tab Item 1 ######################################
 output$YEARS <- renderUI({
   selectInput(inputId = "year", 
               label = "year",
+              selected = "2015",
               choices = unique(factor(data_by_region$Year)))
 })
 
-# TO-DO : ADD POP UPS (TRACK NAME)
 output$MAP <- renderEcharts4r({
   data_by_year <- data_by_region[data_by_region$Year == req(input$year),]
   data_by_year <- data.frame(data_by_year)
   data_by_year$Region <- factor(data_by_year$Region)
-
+  
   data_by_year %>%
     e_charts(Region) %>%
     e_map_register("NZ", nz_json) %>%
@@ -60,9 +42,9 @@ output$MAP <- renderEcharts4r({
       inRange = list(color = c("#3366FF","#6699FF", "#66CCFF", "#33CCFF")),
       type = "piecewise",
       splitList = list(
-        list(min = 1300),
-        list(min = 1100, max = 1200),
-        list(min = 1000, max = 1100),
+        list(min = 300),
+        list(min = 250, max = 300),
+        list(min = 100, max = 250),
         list(value = 0, label = "None")
       ),
       formatter = htmlwidgets::JS("function(value, index, values){
@@ -84,7 +66,73 @@ output$MAP <- renderEcharts4r({
     e_text_style(
       fontFamily = "monospace"
     )
-  
+})
+
+
+################################# Tab Item 2 ######################################
+
+output$yearly1 <- renderValueBox({
+  datafrme <- datasetInput()
+  highValue(datafrme = datafrme, year = 2017)
+})
+
+output$yearly2 <- renderValueBox({
+  datafrme <- datasetInput()
+  highValue(datafrme = datafrme, year = 2016)
+})
+
+output$yearly3 <- renderValueBox({
+  datafrme <- datasetInput()
+  highValue(datafrme = datafrme, year = 2015)
+})
+
+output$OUT <- renderUI({
+  HTML(paste0("<mark>", "Summary table for the Family selected", 
+              "</mark>"))
+})
+
+output$TABLE <-  DT::renderDataTable({
+  orange <- datasetInput()
+  oranges <- orange[!(names(orange) %in% c("X", "Region", "long", "lat"))]
+  DT::datatable(oranges, rownames = FALSE, escape = FALSE,
+                caption = htmltools::tags$caption("Table: Family", input$Names,
+                                                  style = "caption-side:bottom; text-align:center;"),
+                options = list(lengthMenu = c(5,10,15,20),
+                               scrollX = TRUE,
+                               searching = TRUE,
+                               pagingType = "simple",
+                               language = list(info = '_TOTAL_ records', 
+                                               paginate = list(previous = 'Back', `next` = 'Forward')))
+  )
+})
+
+output$hchart <- renderHighchart({
+  ts <- tsdata()
+  highchart(type = "stock") %>%
+    hc_add_series(ts, type = "line", color = "#5F9EA0",
+                  tooltip = list(pointFormat = "{point.y} oranges")) %>%
+    hc_tooltip(crosshairs = FALSE, borderWidth = 2) %>%
+               #formatter = JS("function(){return (this.y + ' oranges' )}")) %>%
+    hc_scrollbar(enabled = FALSE) %>%
+    hc_navigator(enabled = FALSE) %>%
+    hc_rangeSelector(enabled = FALSE) %>%
+    hc_xAxis(title = list(text = "Year", style = list(color = "darkorange", fontWeight = "bold")),
+             lineColor = "black") %>%
+    hc_yAxis(title = list(text = "Monthly bought oranges",
+                          style = list(color = "darkorange", fontWeight = "bold")), 
+             opposite = FALSE, lineWidth = 1, lineColor = "black", gridLineColor = "white") %>%
+    hc_chart(borderColor = '#ADD8E6', borderRadius = 10, borderWidth = 2, 
+             backgroundColor = list(
+               linearGradient = c(0, 0, 500, 500),
+               stops = list(
+                 list(0, 'rgb(255, 255, 255)'),
+                 list(1, 'rgb(140, 224, 255)')
+               )),
+             style = list(fontFamily = "monospace")) %>%
+    hc_title(text = "<b>Total oranges bought over the years line chart</b>",
+             margin = 20, align = "center",
+             style = list(color = "darkorange", useHTML = TRUE)) %>%
+    hc_legend(enabled = FALSE)
 })
 
 
@@ -153,4 +201,6 @@ output$TABLE3 <- DT::renderDataTable(
                                language = list(info = '_TOTAL_ records'))
                )
 )
+
+
 

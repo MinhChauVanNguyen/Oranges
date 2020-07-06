@@ -64,3 +64,32 @@ data_by_year %>%
     text = "Visitors grouped by year and region",
     subtext = "Choose a year and hover over the map for more information")
 
+
+familyA <- orange[orange$Name == "A",]
+nrow(familyA)
+
+taildt <- tail(familyA, n = 72)
+taildt
+
+true <- ts(taildt$Total, frequency = 12,
+           start = c(min(taildt$Year), min(taildt[taildt$Year == min(taildt$Year), "Month"])))
+
+
+train <- window(true, 
+                start = c(start(time(true))[1], match(month.abb[cycle(true)][1], month.abb)), 
+                end = c(floor(time(true)[floor(length(true)*0.8)]),
+                        match(month.abb[cycle(true)][floor(length(true)*0.8)], month.abb)))
+
+arimadata <- auto.arima(train, stepwise = FALSE, approximation = FALSE)
+
+testing <- window(true, 
+                  start = c(floor(time(true)[floor(length(true)*0.8)]),
+                            match(month.abb[cycle(true)][floor(length(true)*0.8)], month.abb)+1))
+
+fc <- forecast(arimadata, h = 36, level = c(30,50,70))
+xy <- t(accuracy(fc, testing))
+xy
+
+
+
+tail(true, n = 24)

@@ -5,14 +5,16 @@ tabPanel("Arima Model", value = 2,
          h3(textOutput(outputId = "TEXT", container = span)),
          h3(textOutput(outputId = "TEXT2", container = span)),
          tags$style(type='text/css', '#ARIMA {background-color:gray87; color:#FF8C00; border:radius:50px;}'),
+         tags$style(type='text/css', '#MSE {background-color:gray87; color:#FF8C00; max-height:375px;}'),
          fluidRow(
-           column(6, offset = 3, verbatimTextOutput(outputId = "ARIMA") %>% withSpinner())
-           #column(5, verbatimTextOutput(outputId = "MSE") %>% withSpinner())
+           column(6, verbatimTextOutput(outputId = "ARIMA") %>% withSpinner()),
+           column(5, verbatimTextOutput(outputId = "MSE") %>% withSpinner())
          ),
-         tags$style(type='text/css', '#ARIMA2 {background-color:#DCDCDC; color:#FF8C00;}'),
-         tags$style(type='text/css', '#MSE {background-color:white; color:#FF8C00; max-height:375px;}'),
+         tags$style(type='text/css', '#ARIMA2 {background-color:gray87; color:#FF8C00;}'),
+         tags$style(type='text/css', '#MSE2 {background-color:gray87; color:#FF8C00; max-height:375px;}'),
          fluidRow(
            column(6, verbatimTextOutput(outputId = "ARIMA2") %>% withSpinner()),
+           column(5, verbatimTextOutput(outputId = "MSE2") %>% withSpinner())
          ),
          br(),
          shinyjs::hidden(div(id = "hiding", 

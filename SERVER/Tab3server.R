@@ -1,30 +1,46 @@
 tmap_mode("plot")
 
+output$DATA3 <- renderUI({
+  selectInput(inputId = "Names3",
+              label = "Choose a Family Name", selectize = FALSE,
+              choices = sort(unique(factor(orange$Name))))
+})
+
+data3 <- reactive({
+  inputdata <- orange[orange$Name == req(input$Names3), ]
+})
+
+tsdata3 <- reactive({
+  inputdata <- data3()
+  tsdata <- ts(inputdata$Total, frequency = 12,
+               start = c(min(inputdata$Year), min(inputdata[inputdata$Year == min(inputdata$Year), "Month"])))
+})
+
 mapdata <- reactive({
-  if(isTRUE(input$Names %in% LETTERS[1:16])){
-    nz[nz$Name == nz$Name[nz$People == req(input$Names)],]
-  }else{
-    nz[nz$Name == nz$Name[nz$People2 == req(input$Names)],]
-  }
+  #if(isTRUE(input$Names %in% LETTERS[1:16])){
+    nz[nz$Name == nz$Name[nz$People == req(input$Names3)],]
+  #}else{
+   # nz[nz$Name == nz$Name[nz$People2 == req(input$Names)],]
+  #}
 })
 
 output$my_tmap <- renderPlot({
   tm_shape(nz) + tm_borders(lty = "solid", lwd = 1, col = "white") +      
-    tm_shape(mapdata()) + tm_fill(col = "color", title = "Region", labels = nz$Name[nz$People == req(input$Names)]) + 
+    tm_shape(mapdata()) + tm_fill(col = "color", title = "Region", labels = nz$Name[nz$People == req(input$Names3)]) + 
     tm_layout(frame = FALSE, bg.color = "steelblue", legend.width = 1, legend.text.size = 1) +
     tm_borders(lwd = 2, col = "white") 
   #tm_basemap(NULL)
 })
 
 forecastingy <- reactive({
-  tsdata <- req(tsdata())
+  tsdata <- req(tsdata3())
   fit <- tslm(tsdata ~ trend + season)
   forecastdata <- forecast(fit, h = 36, level = c(30,50,70))
   forecastdata
 })
 
 output$PLOT3 <- renderDygraph({
-  tsdata <- req(tsdata())
+  tsdata <- req(tsdata3())
   reg.mean <- forecastingy()
   graph <- cbind(actuals = tsdata, pointfc_mean = reg.mean$mean,
                   lower_70 = reg.mean$lower[,3], upper_70 = reg.mean$upper[,3],
@@ -104,7 +120,7 @@ output$legendplot <- renderPlotly({
 })
 
 tab3data <- reactive({
-  dat <- orange[orange$Name == req(input$Names), ]
+  dat <- orange[orange$Name == req(input$Names3), ]
   dat <- dat[!(names(dat) %in% c("Region", "long", "lat", "Member"))]
   fitted.mode <- fitted(fitdf())
   data <- data.frame(Y = as.matrix(fitted.mode), date = floor(time(fitted.mode)))
@@ -144,17 +160,17 @@ predicted <- reactive({
 
 mgintake <- reactive({
   y <- predicted()
-  m <- orange$Member[orange$Name == input$Names][1]
+  m <- orange$Member[orange$Name == input$Names3][1]
   z <- (y*53.2)/m
   z
 })
 
 observe({
   mgintake <- mgintake()
-  member <- orange$Member[orange$Name == input$Names][1]
+  member <- orange$Member[orange$Name == input$Names3][1]
   y <- predicted()
   updateKnobInput(session, inputId = "knob1", 
-                  label = paste("Family", input$Names, "has", member, 
+                  label = paste("Family", input$Names3, "has", member, 
                                "members and their forecast number of oranges is", y), 
                   value = mgintake) 
 })

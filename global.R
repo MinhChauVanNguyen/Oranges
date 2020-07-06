@@ -78,7 +78,7 @@ dygrapph <- function(graph, title, id){
     dySeries(name = c("lower_30", "pointfc_mean", "upper_30"), label = "30% PI") %>%
     dySeries(name = c("lower_50", "pointfc_mean", "upper_50"), label = "50% PI") %>%
     dySeries(name = c("lower_70", "pointfc_mean", "upper_70"), label = "70% PI") %>%
-    dyAxis("y", valueFormatter = interval_value_formatter) %>%
+    dyAxis("y", valueFormatter = interval_value_formatter, label = "Monthly bought oranges") %>%
     dyAxis("x", axisLabelFormatter = 'function(d){ var month = d.getMonth().toString().fontsize(2) ;var year = d.getFullYear().toString().fontsize(2); return  year}',
            label = "Year") %>%
     dyCSS(textConnection("
@@ -291,5 +291,5 @@ nz <- nz[ , !(names(nz) %in% drops)]
 
 nz$People <- LETTERS[1:16]
 
-nz$People2 <- c(LETTERS[17:26], rep("None", 6))
+#nz$People2 <- c(LETTERS[17:26], rep("None", 6))
 

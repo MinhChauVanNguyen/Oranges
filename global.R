@@ -1,60 +1,98 @@
-# Install packages
+# Install packages: FAILED WHEN DEPLOYING TO IO
 
-Install_And_Load <- function(packages) {
-  #  Finds all the already installed R packages
-  k <- packages[!(packages %in% installed.packages()[,"Package"])]
-  # Check if the packages which we want to install are already installed or not
-  # if package is missing (not installed), install the package
-  # if package is already installed, it does not install it again.
-  if(length(k)){
-    install.packages(k, repos = 'https://cran.stat.auckland.ac.nz/')
-  }
-  for(package_name in packages){
-    library(package_name,character.only=TRUE, quietly = TRUE)
-  }
-}
+# Install_And_Load <- function(packages) {
+#   #  Finds all the already installed R packages
+#   k <- packages[!(packages %in% installed.packages()[,"Package"])]
+#   # Check if the packages which we want to install are already installed or not
+#   # if package is missing (not installed), install the package
+#   # if package is already installed, it does not install it again.
+#   if(length(k)){
+#     install.packages(k, repos = "https://cran.stat.auckland.ac.nz/")
+#   }
+#   for(package_name in packages){
+#     library(package_name,character.only=TRUE, quietly = TRUE)
+#   }
+# }
+# # 
+# Install_And_Load(c("DT",
+#                    "tidyverse",
+#                    "dplyr",
+#                    "formattable",
+#                    "data.table",
+#                    # shiny packages
+#                    "shiny",
+#                    "shinydashboard",
+#                    "shinydashboardPlus",
+#                    "shinyWidgets",
+#                    "shinyjs",
+#                    "shinyBS",
+#                    "shinyjqui",
+#                    "shinycustomloader",
+#                    "shinycssloaders",
+#                    # map packages
+#                    "tmap",
+#                    "tmaptools",
+#                    "spData",
+#                    # ts plot packages
+#                    "dygraphs",
+#                    "echarts4r",
+#                    "plotly",
+#                    "highcharter",
+#                    # residual plot packages
+#                    "ggplot2",
+#                    "grid",
+#                    "gridExtra",
+#                    # time series packages
+#                    "zoo",
+#                    "caret",
+#                    "xts",
+#                    "forecast",
+#                    "seasonal",
+#                    "imputeTS",
+#                    "urca",
+#                    # login
+#                    "sodium",
+#                    "mathjaxr",
+#                    "DiagrammeR"
+#                    ))
 
-Install_And_Load(c("DT",                          
-                   "tidyverse", 
-                   "dplyr", 
-                   "formattable",
-                   "data.table",
-                   # shiny packages
-                   "shiny",                         
-                   "shinydashboard",
-                   "shinydashboardPlus",
-                   "shinyWidgets",
-                   "shinyjs",
-                   "shinyBS",
-                   "shinyjqui",
-                   "shinycustomloader",
-                   "shinycssloaders",
-                   # map packages
-                   "tmap",                         
-                   "tmaptools",
-                   "echarts4r.maps",
-                   "spData",
-                   # ts plot packages
-                   "dygraphs",
-                   "echarts4r",
-                   "plotly",
-                   "highcharter",
-                   # residual plot packages
-                   "ggplot2",
-                   "grid",
-                   "gridExtra",  
-                   # time series packages
-                   "zoo",
-                   "caret",
-                   "xts",
-                   "forecast",                      
-                   "seasonal",
-                   "imputeTS",
-                   "urca",
-                   # login
-                   "sodium",
-                   "mathjaxr"
-                   ))
+require(grid)
+require(DiagrammeR)
+require(mathjaxr)
+require(sodium)
+require(urca)
+require(imputeTS)
+require(seasonal)
+require(forecast)
+require(xts)
+require(caret)
+require(zoo)
+require(gridExtra)
+require(ggplot2)
+require(highcharter)
+require(plotly)
+require(dygraphs)
+require(echarts4r)
+require(tidyverse)
+require(dplyr)
+require(formattable)
+require(data.table)
+require(shiny)
+require(shinydashboard)
+require(shinydashboardPlus)
+require(shinyWidgets)
+require(shinyjs)
+require(shinyBS)
+require(shinyjqui)
+require(shinycustomloader)
+require(shinycssloaders)
+# map packages
+require(tmap)
+require(tmaptools)
+require(echarts4r.maps)
+require(spData)
+require(DT)
+
 
 # Read in the data
 orange <- read.csv("oranges.csv", header = TRUE, stringsAsFactors = FALSE)
@@ -84,8 +122,8 @@ dygrapph <- function(graph, title, id){
     dyCSS(textConnection("
       .dygraph-title {color:#0099CC; font-weight:bold;}
       .dygraph-axis-label {font-size:12px;}
-      .dygraph-ylabel {font-size:13px;}
-      .dygraph-xlabel {font-size:13px;}")) %>%
+      .dygraph-ylabel {font-size:14px;}
+      .dygraph-xlabel {font-size:14px;}")) %>%
     dyCallbacks(underlayCallback=JS("function(ctx, area, dygraph) {
                         ctx.strokeStyle = 'black';
                         ctx.strokeRect(area.x, area.y, area.w, area.h);}")) %>%
@@ -291,5 +329,34 @@ nz <- nz[ , !(names(nz) %in% drops)]
 
 nz$People <- LETTERS[1:16]
 
-#nz$People2 <- c(LETTERS[17:26], rep("None", 6))
+
+##############################################
+#                                            #
+# https://github.com/swsoyee/2019-ncov-japan #
+#              Author: Su Wei                #   
+#                                            #
+##############################################
+
+getChangeIcon <- function(number) {
+  if (number > 0) {
+    return("fa fa-caret-up")
+  } else {
+    return("fa fa-caret-down")
+  }
+}
+
+getChangeColor <- function(number) {
+  if (number > 0) {
+    return("blue")
+  } else {
+    return("red")
+  }
+}
+getChangeIconWrapper <- function(number, type = "icon") {
+  if (type == "icon") {
+    return(getChangeIcon(number))
+  } else {
+    return(getChangeIcon(number))
+  }
+}
 

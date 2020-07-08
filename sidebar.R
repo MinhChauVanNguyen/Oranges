@@ -1,22 +1,25 @@
 output$sidebar <- renderUI({
-  # if(USER$login == TRUE){
-  #   shinyjs::removeClass(selector = "body", class = "sidebar-collapse")
+  if(USER$login == TRUE){
+    shinyjs::removeClass(selector = "body", class = "sidebar-collapse")
     dashboardSidebar(
       div(style="text-align:center !important;", img(src = "orange2.png", height = "50px")),
       br(),
-      conditionalPanel(condition = "input.sidebarmenu=='tabTwo' || input.sidebarmenu == 'tabThree'",
+      conditionalPanel(condition = "input.tabs=='3' || input.tabs=='1' && input.sidebarmenu=='tabTwo'",
                        div(style="color:white",
                            uiOutput(outputId = "DATA"))
       ),
-      conditionalPanel(condition = "input.sidebarmenu=='tabOne'",
-                     h4("Time Series Analysis"),
-                     br()
+      conditionalPanel(condition = "input.tabs=='1' && input.sidebarmenu=='tabOne'",
+                     h4("Time Series Analysis")
       ),
-      conditionalPanel(condition = "input.tabs==1",
+      conditionalPanel(condition = "input.tabs=='1' && input.sidebarmenu=='tabThree'",
+                       h4("Time Series Analysis")
+      ),
+      conditionalPanel(condition = "input.tabs=='1'",
+                       br(),
                        sidebarMenu(sidebarMenuOutput(outputId = "menu")),
                        br()
       ),
-      conditionalPanel(condition="input.tabs==2",
+      conditionalPanel(condition="input.tabs=='2'",
                        div(style="color:white", uiOutput(outputId = "DATA2")),
                        actionButton(inputId = "press", label = "Press"),
                        actionButton(inputId = "subset", label = "Subset"),
@@ -25,13 +28,14 @@ output$sidebar <- renderUI({
                                           label = HTML("Horizon", as.character(div(style="display:inline-block; margin-left:-5px;", actionLink(inputId = 'RESET', label = '(reset)', icon("sync-alt"))))),
                                           choices = c("Forecast in months" = "", 6, 12, 24)
                        )),
-                       bsPopover(id = "horizon", title = "", content = "Hold up", placement = "right"),
+                       bsPopover(id = "horizon", title = "", content = "Click on the refresh icon to reset horizon values", placement = "right"),
                        radioGroupButtons(
                          inputId = "switchAlert", label = NULL, justified = TRUE,
                          choiceNames = c(
-                           paste(icon("hand-point-right"), "Info"),
-                           paste(icon("laptop"), "Guide")
+                           paste(icon("hand-point-right"), "Guide"),
+                           paste(icon("laptop"), "Info")
                          ),
+                         selected = character(0), 
                          choiceValues = c("alerttwo", "alertone"),
                          status = "primary"
                        ),
@@ -41,7 +45,6 @@ output$sidebar <- renderUI({
                        br(),
                        tags$style(type='text/css', '#toggleAdvanced {font-weight:bold;color:white;'),
                        tags$style(type='text/css', '#RESET {font-weight:bold;color:white;'),
-                       div(style="margin-top:-20px;text-align:center", actionLink(inputId = "toggleAdvanced", label = "Advanced options")),
                        shinyjs::hidden(
                          div(id = "advanced",
                              div(style = "color:white;text-align:center;", uiOutput(outputId = "YEAR")),
@@ -49,10 +52,10 @@ output$sidebar <- renderUI({
                                  checkboxInput(inputId = "bar", label = "All/None")), 
                              div(style = "margin-left:15px", checkboxInput(inputId = "lambda", label = tags$span("Transform data", style = "font-weight:bold;color:white;text-align:center;"))),
                           )
-                       )
+                       ),
+                       div(style="margin-top:8x;text-align:center", actionLink(inputId = "toggleAdvanced", label = "Advanced options"))
       ),
-      conditionalPanel(condition="input.tabs==3",
-                       div(style="color:white", uiOutput(outputId = "DATA3")),
+      conditionalPanel(condition="input.tabs=='3'",
                        br(),
                        withMathJax(),
                        div(style = "margin-top:-15px; margin-bottom:-15px;",
@@ -67,7 +70,7 @@ output$sidebar <- renderUI({
       br(),
       div(menuItemOutput(outputId = "times"), style = "color:white;")
     )
-  # }else{
-  #   shinyjs::addClass(selector = "body", class = "sidebar-collapse")
-  # }
+  }else{
+  shinyjs::addClass(selector = "body", class = "sidebar-collapse")
+  }
 })

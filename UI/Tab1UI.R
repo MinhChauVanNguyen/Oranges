@@ -37,7 +37,7 @@ tabPanel("Results", value = 1,
                                                    tags$h4(icon("home", lib = "glyphicon"), "Options"),
                                                    hr(),
                                                    prettyRadioButtons(inputId = "multiple", label = "Choose to show or hide tabs", 
-                                                                      choices = c("Hide Tabs", "Show Tabs"),  icon = icon("check"),
+                                                                      choices = c("Show Tabs", "Hide Tabs"),  icon = icon("check"),
                                                                       bigger = TRUE, status = "info", animation = "jelly"),
                                                    circle = FALSE, right = TRUE, inline = TRUE, status = "custom", 
                                                    icon = icon("gear"), size = "sm", width = "300px", 
@@ -66,34 +66,18 @@ tabPanel("Results", value = 1,
                               fluidRow(div(id = "table1", 
                                            DT::dataTableOutput(outputId = "TABLE", width = "85%")))
                        ),
-                       column(5, 
-                          div(style = "margin-bottom:20px;margin-top:-10px;", 
+                       column(5, style = "margin-top:-15px;",
+                          tags$hr(id = "newline2"),
+                          div(style = "margin-top:-10px;margin-bottom:-10px;", 
                               fluidRow(
-                                column(width = 4, descriptionBlock(
-                                  number = "17%", 
-                                  number_color = "green", 
-                                  number_icon = "fa fa-caret-up",
-                                  header = "$35,210.43", 
-                                  text = "TOTAL REVENUE", 
-                                  right_border = TRUE,
-                                  margin_bottom = FALSE)),
-                                column(width = 4, descriptionBlock(
-                                  number = "18%", 
-                                  number_color = "red", 
-                                  number_icon = "fa fa-caret-down",
-                                  header = "1200", 
-                                  text = "GOAL COMPLETION", 
-                                  right_border = FALSE,
-                                  margin_bottom = FALSE)),
-                                column(width = 4, descriptionBlock(
-                                  number = "18%", 
-                                  number_color = "red", 
-                                  number_icon = "fa fa-caret-down",
-                                  header = "1200", 
-                                  text = "GOAL COMPLETION", 
-                                  right_border = FALSE,
-                                  margin_bottom = FALSE))
+                                column(width = 4, id = "one", uiOutput(outputId = "stats1")),
+                                bsPopover(id = "one", placement = "top", title = "", content = "% change from<br>2017 data"),
+                                column(width = 4, id = "two", uiOutput(outputId = "stats2")),
+                                bsPopover(id = "two", placement = "top", title = "", content = "% change from<br>2018 data"),
+                                column(width = 4, id = "three", uiOutput(outputId = "stats3")),
+                                bsPopover(id = "three", placement = "top", title = "", content =  "% change from<br>2019 data"),
                               )),
+                          tags$hr(id = "newline2"),
                               fluidRow(div(style = "margin-left:20px;", 
                                     highchartOutput(outputId = "hchart", height = "250px", width = "100%")))
                       )
@@ -101,13 +85,32 @@ tabPanel("Results", value = 1,
                      br()
              ),
              tabItem(tabName = "tabThree", 
-                     fluidRow(column(10, offset = 2, div(icon("info-circle"), 
-                          "The following tables display the forecast number of oranges for", style = "color:blue"), 
-                      div("the selected Family in the next three years together with 30%, ", style = "color:blue"),
-                      div("50% and 70% lower (Lo) and upper (Hi) prediction interval bounds.", style = "color:blue"))),
+                     br(),
+              fluidRow(
+                     column(5, style = "margin-left:30px;",
+                      div(icon("info-circle"), style = "color:blue;",
+                        "The following tables display the forecast number of oranges for 
+                        the selected Family in the next three years together with 30%, 
+                        50% and 70% lower (Lo) and upper (Hi) prediction interval bounds.",
+                        br(),
+                        br(),
+                        icon("info-circle"),
+                        "Arima model can include", code("approximation = FALSE"), "and",
+                        code("stepwise = FALSE"), "arguments to look for every models
+                        possible. These arguments however slow down the", code("auto.arima()"), 
+                        "function's running time. For this reason, they are removed by default 
+                        but can be added using the", tags$b("ARIMA model options"), "on the right."
+                        )
+                      ),
+                      column(6, style = "margin-right:-60px;margin-left:60px;", box(status = "danger",
+                                    uiOutput(outputId = "MOREDATA"),
+                                    prettyRadioButtons(inputId = "switch", label = "ARIMA model options",
+                                                       choices = c("Deactivate arguments", "Activate arguments"),  icon = icon("check"),
+                                                       bigger = TRUE, status = "success", animation = "jelly"))),
+                     ),
                      br(),
                      fluidRow(
-                       column(6, div(id = "table2", style = "font-size:12px;", DT::dataTableOutput(outputId = "TABLE2", width = "90%"))),
+                       column(6, div(id = "table2", style = "font-size:12px;", DT::dataTableOutput(outputId = "TABLE2", width = "90%") %>% withSpinner())),
                        column(6, div(id = "table3", style = "font-size:12px;", DT::dataTableOutput(outputId = "TABLE3", width = "90%")))
                      ),
                      br()

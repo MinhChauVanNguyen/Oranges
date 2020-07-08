@@ -68,6 +68,9 @@ data_by_year %>%
 familyA <- orange[orange$Name == "A",]
 nrow(familyA)
 
+familyAyr1 <- familyA[familyA$Year == 2018,]
+sum(familyAyr1$Total)
+
 taildt <- tail(familyA, n = 72)
 taildt
 

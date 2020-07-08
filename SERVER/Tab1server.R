@@ -1,3 +1,13 @@
+options(spinner.color = "#FFA500", spinner.type = 7)
+
+output$menu <- renderMenu({
+  sidebarMenu(id = "sidebarmenu", 
+              menuItem("Dashboard Summary", tabName = "tabOne", icon = icon("stats", lib = "glyphicon"), selected = TRUE),
+              menuItem("Descriptive Stats", tabName = "tabTwo", icon = icon("table")),
+              menuItem("Results", tabName = "tabThree", icon = icon("chart-line"))
+  )
+})
+
 isolate({
   updateTabItems(session, "sidebarmenu", "tabOne")
 })
@@ -19,9 +29,10 @@ tsdata <- reactive({
 })
 
 ################################# Tab Item 1 ######################################
+
 output$YEARS <- renderUI({
   selectInput(inputId = "year", 
-              label = "year",
+              label = "pick a year",
               selected = "2015",
               choices = unique(factor(data_by_region$Year)))
 })
@@ -106,7 +117,68 @@ output$TABLE <-  DT::renderDataTable({
   )
 })
 
+statsyear1 <- reactive({
+  data <- datasetInput()
+  previousdat <- sum(data[data$Year == 2017,]$Total)
+  currentdat <- sum(data[data$Year == 2018,]$Total) 
+  diff <- currentdat - previousdat
+  per <- (diff/previousdat)*100
+})
+
+statsyear2 <- reactive({
+  data <- datasetInput()
+  previousdat <- sum(data[data$Year == 2018,]$Total)
+  currentdat <- sum(data[data$Year == 2019,]$Total) 
+  diff <- currentdat - previousdat
+  per <- (diff/previousdat)*100
+})
+
+statsyear3 <- reactive({
+  data <- datasetInput()
+  previousdat <- sum(data[data$Year == 2019,]$Total)
+  currentdat <- sum(data[data$Year == 2020,]$Total) 
+  diff <- currentdat - previousdat
+  per <- (diff/previousdat)*100
+})
+
+output$stats1 <- renderUI({
+  perc <- floor(statsyear1())
+  descriptionBlock(
+    number = paste0(abs(perc), "%"), 
+    number_color = getChangeColor(perc), 
+    number_icon = getChangeIconWrapper(perc),
+    header = "2018", 
+    text = "PERCENT CHANGE", 
+    right_border = TRUE,
+    margin_bottom = FALSE)
+})
+
+output$stats2 <- renderUI({
+  perc <- floor(statsyear2())
+  descriptionBlock(
+    number = paste0(abs(perc), "%"), 
+    number_color = getChangeColor(perc), 
+    number_icon = getChangeIconWrapper(perc),
+    header = "2019", 
+    text = "PERCENT CHANGE", 
+    right_border = TRUE,
+    margin_bottom = FALSE)
+})
+
+output$stats3 <- renderUI({
+  perc <- floor(statsyear3())
+  descriptionBlock(
+    number = paste0(abs(perc), "%"), 
+    number_color = getChangeColor(perc), 
+    number_icon = getChangeIconWrapper(perc),
+    header = "2020", 
+    text = "PERCENT CHANGE", 
+    right_border = TRUE,
+    margin_bottom = FALSE)
+})
+
 output$hchart <- renderHighchart({
+  inputdata <- datasetInput()
   ts <- tsdata()
   highchart(type = "stock") %>%
     hc_add_series(ts, type = "line", color = "#5F9EA0",
@@ -137,19 +209,38 @@ output$hchart <- renderHighchart({
 
 
 ################################## Tab Item 3 ######################################
-fit <- reactive({
-  tsdata <- tsdata()
-  #training <- window(tsdata, 
-  #            start = c(floor(time(tsdata)[floor(length(tsdata)*0.8)]),
-  #match(month.abb[cycle(tsdata)][floor(length(tsdata)*0.8)], month.abb)+1))
-  #test <- window(tsdata, 
-  #              start = c(floor(time(tsdata)[floor(length(tsdata)*0.8)]), match(month.abb[cycle(tsdata)][floor(length(tsdata)*0.8)], month.abb) + 1))
-  arimadata <- auto.arima(tsdata)
+
+output$MOREDATA <- renderUI({
+  selectInput(inputId = "Family",
+              label = "Choose a Family Name", selectize = FALSE,
+              choices = sort(unique(factor(orange$Name))))
+})
+
+datasetInput2 <- reactive({
+  inputdata <- orange[orange$Name == req(input$Family), ]
+})
+
+tsdat <- reactive({
+  inputdata <- datasetInput2()
+  tsdata <- ts(inputdata$Total, frequency = 12,
+               start = c(min(inputdata$Year), min(inputdata[inputdata$Year == min(inputdata$Year), "Month"])))
+})
+
+fitt <- reactive({
+  tsdata <- tsdat()
+  training <- window(tsdata, 
+              start = c(floor(time(tsdata)[floor(length(tsdata)*0.8)]),
+  match(month.abb[cycle(tsdata)][floor(length(tsdata)*0.8)], month.abb)+1))
+  if(isTRUE(input$switch)){
+    arimadata <- auto.arima(training)
+  }else{
+    arimadata <- auto.arima(training, approximation = FALSE, stepwise = FALSE)
+  }
+  arimadata
 })
 
 forecasting <- reactive({
-  model <- suppressWarnings(fit())
-  tsdata <- tsdata()
+  model <- suppressWarnings(fitt())
   ARIMA.mean <- model %>% forecast(h = 36, level = c(30,50,70))
 })
 
@@ -174,14 +265,13 @@ output$TABLE2 <- DT::renderDataTable(
   )
 )
 
-fitdf <- reactive({
-  tsdata <- req(tsdata())
+fitt2 <- reactive({
+  tsdata <- req(tsdat())
   fit <- tslm(tsdata ~ trend + season)
 })
 
 forecastingtwo <- reactive({
-  tsdata <- tsdata()
-  fit <- fitdf()
+  fit <- fitt2()
   fc <- forecast(fit, h = 36, level = c(30, 50, 70))
   fc <- data.frame(fc)
   data <- setNames(cbind(rownames(fc), fc, row.names = NULL), 

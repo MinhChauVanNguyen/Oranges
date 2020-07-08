@@ -1,3 +1,39 @@
+output$dg <- renderGrViz({
+  grViz("digraph flowchart {
+  graph[label = <<b>Diagram on how to use the ARIMA model tab</b>>, fontname = monospace, fontsize = 17, labelloc = b]
+    # node definitions with substituted label text
+    node [fontname = monospace, shape = oval, style = filled, color = HotPink]
+    a [label = '@@1', fillcolor = LightSeaGreen, width = 2.5, shape = box, style = 'rounded, filled', alpha = 0.2]
+    b [label = '@@2', fillcolor = PaleTurquoise, height = 0.5]
+    c [label = '@@3', fillcolor = PaleTurquoise, height = 0.6]
+    d [label = '@@4', fillcolor = PaleTurquoise, height = 0.6, width = 3]
+    e [label = '@@5', fillcolor = Lavender, height = 0.5]
+    f [label = '@@6', fillcolor = Lavender, height = 0.6]
+    g [label = '@@7', fillcolor = Lavender, height = 0.6]
+    h [label = '@@8', fillcolor = Lavender, height = 0.5]
+    i [label = '@@9', fillcolor = AquaMarine, height = 0.5]
+    j [label = '@@10', fillcolor = AquaMarine, height = 0.5]
+
+    # edge definitions with the node IDs
+    a -> {b c d}[arrowhead = vee, penwidth = 2]
+    {c b} -> i[arrowhead = vee, penwidth = 2]
+    d -> {e f g h }[arrowhead = vee, penwidth = 2]
+    {e f g h } -> j[arrowhead = vee, penwidth = 2]
+    }
+    
+    [1]: 'Choose a Family Name'
+    [2]: 'Press'
+    [3]: 'Horizon + Press'
+    [4]: 'Select one or more years'
+    [5]: 'Subset'
+    [6]: 'Transform + Subset'
+    [7]: 'Horizon + Subset'
+    [8]: paste0('Transform + Horizon \\n + Subset')
+    [9]: 'Results'
+    [10]: 'Results'
+")
+})
+
 output$DATA2 <- renderUI({
   selectizeInput(inputId = "Name2",
               label = "Choose a Family Name",
@@ -6,6 +42,27 @@ output$DATA2 <- renderUI({
                 placeholder = 'Name',
                 onInitialize = I('function() { this.setValue(""); }'))
   )
+})
+
+observeEvent(input$press, {
+  hide(id = "dg")
+})
+
+observeEvent(input$subset, {
+  hide(id = "dg")
+})
+
+observeEvent(input$HideFlow,{
+  toggle(id = "dg")
+})
+
+observeEvent(input$HideFlow,{
+  if(input$HideFlow %% 2 == 1) {
+    txt <- "Hide Flowchart"
+  } else {
+    txt <- "Advanced Flowchart"
+  }
+  updateActionButton(session, "HideFlow", label = txt)
 })
 
 dataset <- reactive({
@@ -23,7 +80,7 @@ observeEvent(input$toggleAdvanced,{
     txt <- "Hide options"
     icon <- icon("arrow-up")
   } else {
-    txt <- "Advanced options"
+    txt <- "Show options"
     icon <- icon("arrow-down")
   }
   updateActionButton(session, "toggleAdvanced", label = txt, icon = icon)
@@ -38,7 +95,7 @@ output$YEAR <- renderUI({
 })
 
 observe({
-  if(is.null(input$Name2)){return()}
+  #if(is.null(input$Name2)){return()}
   data <- orange[orange$Name == req(input$Name2), ]
   data$Year <- factor(data$Year)
   updateCheckboxGroupInput(
@@ -65,36 +122,37 @@ observeEvent(input$switchAlert,{
            years then click the <span style='color:yellow;'><b>Subset</b></span> button.</div>"), append = FALSE, style = 'success')
     jqui_draggable(selector = '.alert-success')
   }else{
-    createAlert(session, anchorId = "information", alertId = "Alert2", title = HTML("<center>Please Read</center>"),
+    createAlert(session, anchorId = "information", alertId = "Alert2", title = HTML("<center><font size='40px'>Please Read<font size='40px'></center>"),
                 content = HTML("<div class=alert alert-info role=alert style='color:black;'>
       <p>The requirement for forecasting 3 years ahead is that the selected Family has to <br>
-         have at least three years worth of data, i.e. nrow(Family) = 36 observations/months.<br>
+         have <b>at least three years worth of data, i.e. nrow(Family) = 36 observations/months</b>.<br>
          Ideally, the family should have more than 36 observations in order to improve the <br>
-         model's accuracy. Most tracks will have data for 6 years or longer. It is recommended <br>
+         model's accuracy. Most families will have data for 6 years or longer. It is recommended <br>
          that only historical data from the most recents years are used.</p>
       <hr>
     <ol>
-  <li>Set the threshold number of rows in a selected Family to nrow = 72 observations. </li>
-  <li>If the Family chosen has data less than 72 months then use the full data to fit <br>
-  the model. Otherwise, only use the last 72 observations for the selected Family. </li>
-  <li>Use the fitted model to forecast the number of oranges bought for h = 24 months <br>
+  <li>Set the threshold number of rows in a selected Family to <b>nrow = 72 observations</b>. </li>
+  <li>If the Family chosen has data <b>less than 72 months</b> then full data is used to fit <br>
+  the model. Otherwise, only the last 72 observations is used for the selected Family. </li>
+  <li>Use the fitted model to forecast the number of oranges bought for <b>h = 24 months</b> <br>
   if all data for the chosen Family has been used. Otherwise, use h = 36 months. </li>
   </ol></div>"), append = FALSE, style = 'info')
     jqui_draggable(selector = '.alert-info')
   }
 })
 
+
 observeEvent(input$subset,{
   if(is.null(input$year2)){
-    createAlert(session, anchorId = "noyearinput", alertId = "extra2", title = HTML("<center>OOPS!</center>"),
-                content = HTML("<div class=alert alert-danger role=alert style='color:black;text-align:left;'>
-              Please choose at least three years <br>
-              in <b>Advanced options</b> before pressing<br>
-              the <b>Subset</b> button.</div>"), 
+    createAlert(session, anchorId = "noyearinput", alertId = "Alert3", title = HTML("<center><font size='20px'>OOPS!</center></font>"),
+          content = HTML("<div class=alert alert-danger role=alert style='color:black;text-align:left;'>
+              Please choose one more (consecutive)<br>
+              years in <b>Advanced options</b> before <br>
+              clicking the <b>Subset</b> button.</div>"), 
                 append = FALSE, style = 'danger')
     jqui_draggable(selector = '.alert-danger')
   }else{
-    closeAlert(session, alertId = "extra2")
+    closeAlert(session, alertId = "Alert3")
   }
 })
 
@@ -111,21 +169,43 @@ observeEvent(input$subset,{
   button2$but2 <- TRUE
 })
 
-observeEvent(input$press, {
+observeEvent(c(input$press,input$subset), {
   output$TEXT <- renderText({
-    if(button1$but1)
-      paste("ARIMA model for Family", isolate(input$Name2))
-    else 
+    if(button1$but1){
+      paste("<h3>ARIMA model for Family", isolate(input$Name2), "</h3>")
+    }else if(button2$but2){ 
+      paste("<h3>ARIMA (advanced) model for Family", isolate(input$Name2), "</h3>")
+    }else{
       return()
+    }
   })
 })
 
-observeEvent(input$subset, {
+observeEvent(c(input$press,input$subset), {
+  if(button1$but1 || button2$but2){
+    shinyjs::show(id = "flowchartbutton")
+  }else{
+    return()
+  }
+})
+
+observeEvent(c(input$press,input$subset), {
   output$TEXT2 <- renderText({
-    if(button2$but2)
-      paste("ARIMA (advanced) model for Family", isolate(input$Name2))
-    else
+    if(button1$but1 || button2$but2){
+      paste("SUMMARY MODEL")
+    }else{
       return()
+    }
+  })
+})
+
+observeEvent(c(input$press,input$subset), {
+  output$TEXT3 <- renderText({
+    if(button1$but1 || button2$but2){
+      paste("ACCURACY OF THE MODEL")
+    }else{
+      return()
+    }
   })
 })
 
@@ -311,7 +391,8 @@ output$MSE <- renderPrint({
   data <- dataset()
   if(button1$but1){
     if(isTRUE(nrow(data) < 72) && isTRUE(input$horizon == "")){
-      paste("There is not enough data.")
+      paste("There is not enough data to be split into training and test set.
+            Therefore the accuracy of the model cannot be calculated.")
     }else{
       accurate <- accurate1()
       accurate

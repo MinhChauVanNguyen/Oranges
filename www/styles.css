@@ -288,10 +288,21 @@ div.MathJax_Display{
    text-align:center !important;
    font-family:monospace !important;
 }
+.MathJax body{font-family:monospace;}
 
 /* line break */
+#newline1{
+  border-top: 1px solid;
+  color:lightseagreen;
+}
+
+#newline2{
+  border-top: 1px solid;
+  color:lightseagreen;
+}
+
 hr{
-  border-top: 2px solid;
+  border-top:2px solid;
 }
 
 /* login page wrong password message */
@@ -302,21 +313,54 @@ hr{
   font-size:14px;
 }
 
+/*SelectInput placeholder */
 ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
- font-size:10px;
+ font-size:12px;
 }
 ::-moz-placeholder { /* Firefox 19+ */
-  font-size:10px;
+  font-size:12px;
 }
 :-ms-input-placeholder { /* IE 10+ */
-  font-size:10px;
+  font-size:12px;
 }
 :-moz-placeholder { /* Firefox 18- */
- font-size:10px;
+ font-size:12px;
 }
 
+/* bsPopover */
 .popover-content{
-  background:#ffff99;
   color:black;
+  font-family:monospace;
 }
 
+/*#horizon+.popover{
+  max-width:200px;
+}*/
+
+.popover{
+  width:150px;
+}
+
+/* remove flow chart tool-tip*/
+svg{ 
+  pointer-events: none;
+}
+
+.box.box-danger{
+  background:rgba(64,224,208, 0.2);
+  border: 1px solid #dddfe2;
+  border-radius:25px;
+  box-shadow: 0 1px 6px 0 rgba(32, 33, 36, .28);
+}
+
+
+code {
+  background-color:transparent;
+  color:red;
+}
+
+.small-box {
+  background-color: #87CEFA	 !important;
+  border-radius: 1vh !important; 
+  border-color: #D20000 !important;
+}

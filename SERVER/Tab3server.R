@@ -1,46 +1,25 @@
 tmap_mode("plot")
 
-output$DATA3 <- renderUI({
-  selectInput(inputId = "Names3",
-              label = "Choose a Family Name", selectize = FALSE,
-              choices = sort(unique(factor(orange$Name))))
-})
-
-data3 <- reactive({
-  inputdata <- orange[orange$Name == req(input$Names3), ]
-})
-
-tsdata3 <- reactive({
-  inputdata <- data3()
-  tsdata <- ts(inputdata$Total, frequency = 12,
-               start = c(min(inputdata$Year), min(inputdata[inputdata$Year == min(inputdata$Year), "Month"])))
-})
-
 mapdata <- reactive({
-  #if(isTRUE(input$Names %in% LETTERS[1:16])){
-    nz[nz$Name == nz$Name[nz$People == req(input$Names3)],]
-  #}else{
-   # nz[nz$Name == nz$Name[nz$People2 == req(input$Names)],]
-  #}
+   nz[nz$Name == nz$Name[nz$People == req(input$Names)],]
 })
 
 output$my_tmap <- renderPlot({
   tm_shape(nz) + tm_borders(lty = "solid", lwd = 1, col = "white") +      
-    tm_shape(mapdata()) + tm_fill(col = "color", title = "Region", labels = nz$Name[nz$People == req(input$Names3)]) + 
-    tm_layout(frame = FALSE, bg.color = "steelblue", legend.width = 1, legend.text.size = 1) +
+    tm_shape(mapdata()) + tm_fill(col = "color", title = "Region", labels = nz$Name[nz$People == req(input$Names)]) + 
+    tm_layout(frame = FALSE, bg.color = "steelblue", legend.width = 1, legend.text.size = 1.2, fontfamily = "mono", fontface = 2) +
     tm_borders(lwd = 2, col = "white") 
-  #tm_basemap(NULL)
 })
 
 forecastingy <- reactive({
-  tsdata <- req(tsdata3())
+  tsdata <- req(tsdata())
   fit <- tslm(tsdata ~ trend + season)
   forecastdata <- forecast(fit, h = 36, level = c(30,50,70))
   forecastdata
 })
 
 output$PLOT3 <- renderDygraph({
-  tsdata <- req(tsdata3())
+  tsdata <- req(tsdata())
   reg.mean <- forecastingy()
   graph <- cbind(actuals = tsdata, pointfc_mean = reg.mean$mean,
                   lower_70 = reg.mean$lower[,3], upper_70 = reg.mean$upper[,3],
@@ -97,7 +76,6 @@ output$legendplot <- renderPlotly({
     showgrid = FALSE
   )
   
-
   p <- df %>% group_by(X) %>% arrange(GroupName) %>% mutate(Y = cumsum(Y)) %>%
     plot_ly(type = 'scatter', x = ~X, y = ~Y, color = ~GroupName, colors = c("#00CCFF", "#33FF00", "black"),
             mode = 'lines', alpha = 0.2, fill = 'tonexty', hoverinfo = 'none') %>%
@@ -119,16 +97,6 @@ output$legendplot <- renderPlotly({
   suppressWarnings(p)
 })
 
-tab3data <- reactive({
-  dat <- orange[orange$Name == req(input$Names3), ]
-  dat <- dat[!(names(dat) %in% c("Region", "long", "lat", "Member"))]
-  fitted.mode <- fitted(fitdf())
-  data <- data.frame(Y = as.matrix(fitted.mode), date = floor(time(fitted.mode)))
-  newdata <- cbind(dat, floor(data$Y))
-  newdata <- newdata[, -1]
-  colnames(newdata) <- c("Name", "Month", "Year", "True", "Predicted")
-  newdata
-})
 
 forecastingdat <- reactive({
   fc <- forecastingy()
@@ -160,17 +128,17 @@ predicted <- reactive({
 
 mgintake <- reactive({
   y <- predicted()
-  m <- orange$Member[orange$Name == input$Names3][1]
+  m <- orange$Member[orange$Name == input$Names][1]
   z <- (y*53.2)/m
   z
 })
 
 observe({
   mgintake <- mgintake()
-  member <- orange$Member[orange$Name == input$Names3][1]
+  member <- orange$Member[orange$Name == input$Names][1]
   y <- predicted()
   updateKnobInput(session, inputId = "knob1", 
-                  label = paste("Family", input$Names3, "has", member, 
+                  label = paste("Family", input$Names, "has", member, 
                                "members and their forecast number of oranges is", y), 
                   value = mgintake) 
 })
@@ -180,16 +148,32 @@ output$ICON <- renderText({
 })
 
 observeEvent(input$calculation,{
-  createAlert(session, anchorId = "percentage", alertId = "two", title = "<center>IMPORTANT</center>",
+  createAlert(session, anchorId = "percentage", alertId = "Alert4", title = "<center><font size='20px'>IMPORTANT</font></center>",
               content = HTML("<div class=alert alert-info, role=alert style='color:black;font-family:monospace;'>
-                        <p>Choose a future month-year and a type<br>
-                           of forecast to output the predicted monthly<br>
+                        <p>Choose a future month-year and a type <br>
+                           of forecast to output the predicted monthly <br>
                            vitamin C intake (mg) per family member, <br>
-                           corresponding month-year. The predicted<br> 
+                           corresponding month-year. The predicted <br> 
                            Vitamin C intake is calculated as follows:</p>
-                        $$\\textrm{mg intake} = \\frac{53.2 \\times \\textrm{No of Predicted Oranges}}{\\textrm{No of Family Member}}$$<script>MathJax.Hub.Queue(['Typeset', MathJax.Hub]);</script>"), 
-              append = FALSE, style = "info")
+            $$\\textrm{mg intake} = \\frac{53.2 \\times \\textrm{No of Predicted Oranges}}{\\textrm{No of Family Member}}$$<script>MathJax.Hub.Queue(['Typeset', MathJax.Hub]);</script>"), 
+            append = FALSE, style = "info")
   jqui_draggable(selector = '.alert-info')
+})
+
+fittedmodel2 <- reactive({
+  tsdata <- req(tsdata())
+  fit <- tslm(tsdata ~ trend + season)
+})
+
+tab3data <- reactive({
+  dat <- datasetInput()
+  dat <- dat[!(names(dat) %in% c("Region", "long", "lat", "Member"))]
+  fitted.model <- fitted(fittedmodel2())
+  data <- data.frame(Y = as.matrix(fitted.model), date = floor(time(fitted.model)))
+  newdata <- cbind(dat, floor(data$Y))
+  newdata <- newdata[, -1]
+  colnames(newdata) <- c("Name", "Month", "Year", "True", "Predicted")
+  newdata
 })
 
 options(warn = -1) 
@@ -197,7 +181,7 @@ options(warn = -1)
 output$gvis <- renderPlotly({
   dt <- tab3data()
   dt$Date <- as.Date(as.yearmon(paste(dt$Year, " ", dt$Month), format = "%Y %m"))
-  fitted.model <- fitted(fitdf())
+  fitted.model <- fitted(fittedmodel2())
   plot_ly(dt, type = 'scatter', mode = 'lines') %>%
     add_trace(x = ~Date, y = ~True, name = "True", text = 'oranges', hovertemplate = '%{y:,} %{text}',
               line = list(color = 'rgb(231,107,243)')) %>%

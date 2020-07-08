@@ -20,24 +20,24 @@ loginpage <- div(id = "loginpage",
             h3("Abstract"),
             p("The Orange Dashboard can be used to predict the number of oranges bought for selected Family
                using Time Series Analysis. Please note the data used was generated randomly 
-               for the purpose of demonstration of the Analysis. For login details:", style ="color:black;"),
-            tags$ul(
-              tags$li(tags$b("Username"), ": Minh"), 
-              tags$li(tags$b("Password"), ": 1")
-            )
+               for the purpose of demonstration of the Analysis.", style ="color:black;")
+            # tags$ul(
+            #   tags$li(tags$b("Username"), ": Minh"), 
+            #   tags$li(tags$b("Password"), ": 1")
+            # )
          )),
+        fluidRow(a(icon("github-alt", "fa-2x"), "Link to Github Repo", href = "https://github.com/MinhChauVanNguyen/Orange", style = "color:orange;")),
         br(),
         tags$script(HTML("$('.box').eq(0).css('border', '1px solid #3DA0D1');")),
-        fluidRow(box(width = NULL, div(style="color:black;margin-top:-10px;", htmlOutput(outputId = "disclaimer")))),
-        fluidRow(a(icon("github-alt", "fa-2x"), "Link to Github Repo", href = "https://github.com/MinhChauVanNguyen/Orange", style = "color:orange;"))
+        fluidRow(box(width = NULL, div(style="color:black;margin-top:-10px;", htmlOutput(outputId = "disclaimer"))))
       ),
-    column(4, offset = 1, style = "padding:0px; margin-top:-30px;",
+    column(4, offset = 1, style = "padding:0px;margin-top:-50px;",
       div(style = "width:300px; max-width:100%; margin-top:100px; padding:0px; border-radius:25px;",
         wellPanel(style = "background:rgb(255,165,0);",
             tags$h2("LOG IN", class = "text-center", style = "padding-top:0; color:white; font-weight:600;"),
             div(style = "color:white;", 
-                textInput(inputId = "userName", placeholder = "Username", label = tagList(icon("user"), "Username")),
-                passwordInput(inputId = "passwd", placeholder = "Password", label = tagList(icon("unlock-alt"), "Password"))
+                textInput(inputId = "userName", placeholder = "Username: Minh", label = tagList(icon("user"), "Username")),
+                passwordInput(inputId = "passwd", placeholder = "Password: 1", label = tagList(icon("unlock-alt"), "Password"))
             ),
             br(),
             div(style = "text-align:center; margin-top:-20px;",

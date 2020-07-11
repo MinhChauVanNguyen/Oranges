@@ -161,7 +161,8 @@ hc_theme_sparkline2 <- function(...) {
       plotBorderWidth = 0,
       borderWidth = 0,
       style = list(
-        overflow = "visible"
+        overflow = "visible",
+        fontFamily = "monospace"
       ),
       skipClone = TRUE
     ),

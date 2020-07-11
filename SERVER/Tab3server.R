@@ -152,11 +152,10 @@ observeEvent(input$calculation,{
               content = HTML("<div class=alert alert-info, role=alert style='color:black;font-family:monospace;'>
                         <p>Choose a future month-year and a type <br>
                            of forecast to output the predicted monthly <br>
-                           vitamin C intake (mg) per family member, <br>
-                           corresponding month-year. The predicted <br> 
-                           Vitamin C intake is calculated as follows:</p>
+                           vitamin C intake (mg) per family member. The<br>
+                           predicted Vitamin C intake is calculated as follows:</p>
             $$\\textrm{mg intake} = \\frac{53.2 \\times \\textrm{No of Predicted Oranges}}{\\textrm{No of Family Member}}$$<script>MathJax.Hub.Queue(['Typeset', MathJax.Hub]);</script>"), 
-            append = FALSE, style = "info")
+              append = FALSE, style = "info")
   jqui_draggable(selector = '.alert-info')
 })
 

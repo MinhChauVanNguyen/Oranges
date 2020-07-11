@@ -5,6 +5,6 @@ account: minhchau
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2547454
-bundleId: 3366279
+bundleId: 3369506
 url: https://minhchau.shinyapps.io/oranges/
-when: 1594199146.09864
+when: 1594251405.93794

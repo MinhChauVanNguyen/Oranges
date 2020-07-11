@@ -2,7 +2,8 @@ output$sidebar <- renderUI({
   if(USER$login == TRUE){
     shinyjs::removeClass(selector = "body", class = "sidebar-collapse")
     dashboardSidebar(
-      div(style="text-align:center !important;", img(src = "orange2.png", height = "50px")),
+      div(style="text-align:center !important;", id = "image", img(src = "orange2.png", height = "50px")),
+      bsPopover(id = "image", title = "", content = "<b>Please refresh the page if <br> an output is not showing <br>properly</b>", placement = "bottom"),
       br(),
       conditionalPanel(condition = "input.tabs=='3' || input.tabs=='1' && input.sidebarmenu=='tabTwo'",
                        div(style="color:white",

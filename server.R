@@ -51,6 +51,18 @@ server <- function(input, output, session){
     }
   })
   
+  # output$refreshbtn <- renderUI({
+  #   if(USER$login == TRUE){
+  #     actionButton(inputId = "refresh", label = "Refresh", icon = icon("refresh"))
+  #   }else{
+  #     return()
+  #   }
+  # })
+  # 
+  # observeEvent(input$refresh, {
+  #   shinyjs::js$refresh()
+  # })
+  
   output$logoutbtn <- renderUI({
     if(USER$login == TRUE){
      req(USER$login)

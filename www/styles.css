@@ -277,10 +277,10 @@ h4{
 }
 
 .box.box-solid.box-primary{
-border-bottom-color:#666666;
-border-left-color:#666666;
-border-right-color:#666666;
-border-top-color:#666666;
+  border-bottom-color:#666666;
+  border-left-color:#666666;
+  border-right-color:#666666;
+  border-top-color:#666666;
 }
 
 /* Math equation in Tab 3 */

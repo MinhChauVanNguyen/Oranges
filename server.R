@@ -45,7 +45,7 @@ server <- function(input, output, session){
   
   output$footer <- renderText({
     if(USER$login == TRUE){
-      paste("<b><span style='color:#0099CC;'>Under Development</span></b>.","Last Updated on 15/07/2020.")
+      paste("<b><span style='color:#0099CC;'>Under Development</span></b>.","Last Updated on 16/07/2020.")
     }else{
       return()
     }
@@ -58,7 +58,7 @@ server <- function(input, output, session){
   #     return()
   #   }
   # })
-  # 
+  
   # observeEvent(input$refresh, {
   #   shinyjs::js$refresh()
   # })
@@ -83,9 +83,9 @@ server <- function(input, output, session){
         source(paste0(MAIN_PATH,"/UI/Tab3UI.R"),local=TRUE)$value,
         source(paste0(MAIN_PATH,"/UI/Tab4UI.R"),local=TRUE)$value
       )
-    }else{
-      loginpage
-    }
+     }else{
+       loginpage
+     }
   })
   
   output$times <- renderUI({

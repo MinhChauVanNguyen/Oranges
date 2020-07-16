@@ -1,5 +1,7 @@
 options(spinner.color = "#FFA500", spinner.type = 7)
 
+data(icons)
+
 output$menu <- renderMenu({
   sidebarMenu(id = "sidebarmenu", 
               menuItem("Dashboard Summary", tabName = "tabOne", icon = icon("stats", lib = "glyphicon"), selected = TRUE),
@@ -177,36 +179,55 @@ output$stats3 <- renderUI({
     margin_bottom = FALSE)
 })
 
-output$hchart <- renderHighchart({
-  inputdata <- datasetInput()
-  ts <- tsdata()
-  highchart(type = "stock") %>%
-    hc_add_series(ts, type = "line", color = "#5F9EA0",
-                  tooltip = list(pointFormat = "{point.y} oranges")) %>%
-    hc_tooltip(crosshairs = FALSE, borderWidth = 2) %>%
-               #formatter = JS("function(){return (this.y + ' oranges' )}")) %>%
-    hc_scrollbar(enabled = FALSE) %>%
-    hc_navigator(enabled = FALSE) %>%
-    hc_rangeSelector(enabled = FALSE) %>%
-    hc_xAxis(title = list(text = "Year", style = list(color = "darkorange", fontWeight = "bold")),
-             lineColor = "black") %>%
-    hc_yAxis(title = list(text = "Monthly bought oranges",
-                          style = list(color = "darkorange", fontWeight = "bold")), 
-             opposite = FALSE, lineWidth = 1, lineColor = "black", gridLineColor = "white") %>%
-    hc_chart(borderColor = '#ADD8E6', borderRadius = 10, borderWidth = 2, 
-             backgroundColor = list(
-               linearGradient = c(0, 0, 500, 500),
-               stops = list(
-                 list(0, 'rgb(255, 255, 255)'),
-                 list(1, 'rgb(140, 224, 255)')
-               )),
-             style = list(fontFamily = "monospace")) %>%
-    hc_title(text = "<b>Total oranges bought over the years line chart</b>",
-             margin = 20, align = "center",
-             style = list(color = "darkorange", useHTML = TRUE)) %>%
-    hc_legend(enabled = FALSE)
-})
+# output$hchart <- renderHighchart({
+#   ts <- tsdata()
+#   highchart(type = "stock") %>%
+#     hc_add_series(ts, type = "line", color = "#5F9EA0",
+#                   tooltip = list(pointFormat = "{point.y} oranges")) %>%
+#     hc_tooltip(crosshairs = FALSE, borderWidth = 2) %>%
+#     hc_scrollbar(enabled = FALSE) %>%
+#     hc_navigator(enabled = FALSE) %>%
+#     hc_rangeSelector(enabled = FALSE) %>%
+#     hc_xAxis(title = list(text = "Year", style = list(color = "darkorange", fontWeight = "bold")),
+#              lineColor = "black") %>%
+#     hc_yAxis(title = list(text = "Monthly bought oranges",
+#                           style = list(color = "darkorange", fontWeight = "bold")), 
+#              opposite = FALSE, lineWidth = 1, lineColor = "black", gridLineColor = "white") %>%
+#     hc_chart(borderColor = '#ADD8E6', borderRadius = 10, borderWidth = 2, 
+#              backgroundColor = list(
+#                linearGradient = c(0, 0, 500, 500),
+#                stops = list(
+#                  list(0, 'rgb(255, 255, 255)'),
+#                  list(1, 'rgb(140, 224, 255)')
+#                )),
+#              style = list(fontFamily = "monospace")) %>%
+#     hc_title(text = "<b>Total oranges bought over the years line chart</b>",
+#              margin = 20, align = "center",
+#              style = list(color = "darkorange", useHTML = TRUE)) %>%
+#     hc_legend(enabled = FALSE)
+# })
 
+output$chart <- renderEcharts4r({
+  data <- datasetInput()
+  dat <- group_by(data, Month) %>% summarize(Amount = sum(Total))
+  dat$Month <- month.abb[dat$Month]
+  dat %>%
+    e_charts(Month) %>%
+    e_bar(Amount, name = paste("Family", input$Names)) %>%
+    e_tooltip(formatter = htmlwidgets::JS("
+                function(params){
+                return('<strong>' + params.value[0] +
+                '<br />Data: ' + params.value[1] + ' oranges')}
+      ")) %>%
+    e_lm(Amount ~ Month, legend = FALSE) %>%
+    e_legend(bottom = "77%", right = "15%", icon = ea_icons("bar_graph")) %>%
+    e_title(text = "Oranges grouped by month & year", textAlign = 'left', left = '10%', bottom = '85%') %>%
+    e_x_axis(type = 'category', name = "Month", nameLocation = 'center', nameGap = 25, nameTextStyle = list(fontWeight = 'bold'),
+             axisLabel = list(interval = '0')) %>%
+    e_y_axis(name = "Total oranges", nameLocation = 'center', nameGap = 35, nameTextStyle = list(fontWeight = 'bold')) %>%
+    e_text_style(fontFamily = "monospace") %>%
+    e_color(color= c("orange","#87CEEB"), background = "rgba(140, 224, 255, 0.2)")
+})
 
 ################################## Tab Item 3 ######################################
 

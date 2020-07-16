@@ -16,6 +16,7 @@ ui <- dashboardPage(
   ),
   body = dashboardBody(
     tags$link(rel = "stylesheet", type = "text/css", href = "styles.css"),
+    #tags$head(tags$meta(name = "viewport", content = "width=1600"), 
     uiOutput("body"),
     br(),
     div(style="margin-top:-30px", htmlOutput("footer"))

@@ -92,7 +92,8 @@ require(tmaptools)
 require(echarts4r.maps)
 require(spData)
 require(DT)
-
+require(echarts4r.assets)
+require(recharts)
 
 # Read in the data
 orange <- read.csv("oranges.csv", header = TRUE, stringsAsFactors = FALSE)

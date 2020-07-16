@@ -43,6 +43,15 @@ tabPanel("Results", value = 1,
                                                    icon = icon("gear"), size = "sm", width = "300px", 
                                                    tooltip = tooltipOptions(title = "Options", placement = "top")), 
                                     style = "display:inline-block; margin-top:25px;"))
+                         #   column(5, div(style = "display:inline-block; margin-top:25px;", radioGroupButtons(
+                         #       inputId = "switchMap", label = NULL, justified = TRUE,
+                         #       choiceNames = c(
+                         #         paste(icon("map-marker-alt"), "Map"),
+                         #         paste(icon("fighter-jet"), "Advanced")
+                         #       ),
+                         #       choiceValues = c("mapone", "maptwo"),
+                         #       status = "primary"
+                         #     )))
                          ),
                          div(style="margin-bottom:-30px;", fluidRow(echarts4rOutput(outputId = "MAP")))
               )
@@ -66,9 +75,9 @@ tabPanel("Results", value = 1,
                               fluidRow(div(id = "table1", 
                                            DT::dataTableOutput(outputId = "TABLE", width = "85%")))
                        ),
-                       column(5, style = "margin-top:-15px;",
+                       column(5, style = "margin-top:-18px;",
                           tags$hr(id = "newline2"),
-                          div(style = "margin-top:-10px;margin-bottom:-10px;", 
+                          div(style = "margin-top:-15px;margin-bottom:-15px;", 
                               fluidRow(
                                 column(width = 4, id = "one", uiOutput(outputId = "stats1")),
                                 bsPopover(id = "one", placement = "top", title = "", content = "% change from<br>2017 data"),
@@ -78,8 +87,9 @@ tabPanel("Results", value = 1,
                                 bsPopover(id = "three", placement = "top", title = "", content =  "% change from<br>2019 data"),
                               )),
                           tags$hr(id = "newline2"),
-                              fluidRow(div(style = "margin-left:20px;", 
-                                    highchartOutput(outputId = "hchart", height = "250px", width = "100%")))
+                              fluidRow(div(style = "margin-left:35px;", 
+                                           echarts4rOutput(outputId = "chart", height = "270px", width = "105%")))
+                                    #highchartOutput(outputId = "hchart", height = "250px", width = "100%")))
                       )
                      ),
                      br()

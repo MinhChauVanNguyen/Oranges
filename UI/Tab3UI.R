@@ -3,7 +3,7 @@ tabPanel("Regression Model", value = 3,
           fluidRow(
            column(2, style = "margin-left:70px;margin-top:30px; margin-right:-30px;",
             fluidRow(div(id = "dylegend_2", box(width = NULL, textOutput(outputId = "legend2")))),
-            div(style = "margin-left:12px;font-size:16px", fluidRow(p("P.I* Color Classes"))),
+            div(style = "margin-left:12px;font-size:15px", fluidRow(p("P.I* Color Classes"))),
             div(style = "margin-bottom:-250px;", fluidRow(plotlyOutput(outputId = "legendplot"))),
             div(style = "margin-left:12px;font-size:13px", fluidRow(p("*prediction interval")))
           ),

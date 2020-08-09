@@ -1,16 +1,17 @@
 library(recharts)
 library(dplyr)
 
-
-echartr(data, Region, Amount, type='map_world', subtype='New zealand') %>% 
-  setTitle('New Zealand')
-
 orange <- read.csv("oranges.csv", header = TRUE, stringsAsFactors = FALSE)
 
 data <- group_by(orange, Region, long, lat) %>% summarize(Amount = sum(Total))
 data <- data.frame(data)
 names(data) <- c('name', 'lng', 'lat','value')
+data
 
+orange <- read.csv("oranges.csv", header = TRUE, stringsAsFactors = FALSE)
+
+data_by_region <- group_by(orange, Name, Region, long, lat, Year) %>%
+  summarise(Amount = sum(Total))
 
 echartr(NULL, type='map_world', subtype='New zealand') %>% 
   addMP(series='Top 5',

@@ -1,20 +1,26 @@
-#library(recharts)
+library(recharts)
 library(echarts4r)
 library(echarts4r.maps)
 library(shiny)
 library(shinyWidgets)
 library(shinydashboard)
+library(purrr)
+library(dplyr)
 
-orange <- read.csv("oranges.csv", header = TRUE, stringsAsFactors = FALSE)
 
-data_by_region <- group_by(orange, Name, Region, long, lat, Year) %>%
-  summarise(Oranges = sum(Total))
+data_by_region <- data.frame(
+  Name = rep("A", 8),
+  Region = rep("Northland", 8),
+  long = rep(174.3223, 8),
+  lat = rep(-35.7047, 8),
+  Year = 2013:2020,
+  Amount = c(227, 252, 373, 363, 287, 307, 308, 293)
+)
 
+# Remove Chatham Island for echarts4r maps
 nz_file <- system.file("New_Zealand.json", package = "echarts4r.maps") 
 nz_json <- jsonlite::read_json(nz_file)
 
-# identify polygon causing issues
-library(purrr)
 
 # get names of polygons
 names <- nz_json$features %>% 
@@ -31,54 +37,55 @@ ui <- dashboardPage(
   dashboardHeader(),
   dashboardSidebar(),
   dashboardBody(
-    uiOutput("YEARS"),
-    # radioGroupButtons(
-    #   inputId = "switchMap", label = NULL, justified = TRUE,
-    #   choiceNames = c(
-    #     paste(icon("hand-point-right"), "Guide"),
-    #     paste(icon("laptop"), "Info")
-    #   ),
-    #   choiceValues = c("alerttwo", "alertone"),
-    #   status = "primary"
-    # ),
-    uiOutput(outputId = "check"),
-    #div(style="margin-bottom:-30px;", echarts4rOutput(outputId = "MAP"))
-    fluidRow(column(6, uiOutput(outputId = "orangemap")))
-    # eChartOutput(outputId = "myChart"),
-    # echarts4rOutput(outputId = "MAP")
+    selectInput(inputId = "year", 
+                label = "pick a year",
+                choices = unique(factor(data_by_region$Year))),
+    fluidRow(
+      column(
+        width = 5, tags$div(
+      fluidRow(
+        column(
+          width = 6,
+          materialSwitch(
+            inputId = "switchMap",
+            value = TRUE)
+    ))))),
+    fluidRow(column(6, uiOutput(outputId = "map")))
   )
 )
 
 server = function(input, output, session) {
-    output$YEARS <- renderUI({
-      selectInput(inputId = "year", 
-                  label = "pick a year",
-                  choices = unique(factor(data_by_region$Year)))
-    })
-    
-   output$check <- renderUI(
-     checkboxInput(inputId = "switchMap", label = "switch", value = TRUE),
-   )
+  
+  output$map <- renderUI({
+    if(input$switchMap == TRUE){
+      echarts4rOutput(outputId = "myMap1")
+    }else{
+      echarts4rOutput(outputId = "myMap2")
+    }
+  })
    
-    output$orangemap <- renderUI({
-     if(req(input$switchMap)){
-       eChartOutput(outputId = "myChart")
-     }else{
-       echarts4rOutput(outputId = "MAP")
-     }
-    })
-   
-    output$MAP <- renderEcharts4r({
+    output$myMap1 <- renderEcharts4r({
+      
       data_by_year <- data_by_region[data_by_region$Year == req(input$year),]
       data_by_year <- data.frame(data_by_year)
       data_by_year$Region <- factor(data_by_year$Region)
       
+      newdata <- data_by_year %>% top_n(5)
+      
+      for(i in 1:nrow(newdata)){
+        minh <- list(name = newdata$Name[i], coord = c(newdata$lng[i], newdata$lat[i]))
+        map <- map %>% e_mark_point(data = minh,
+                                    symbolSize = c(30, 40), animation = TRUE,
+                                    itemStyle = list(color ="pink", opacity = 0.5, borderColor = "blue"),
+                                    effect=list(show=TRUE)) 
+      }
+      
       data_by_year %>%
         e_charts(Region) %>%
         e_map_register("NZ", nz_json) %>%
-        e_map(Oranges, map = "NZ") %>%
+        e_map(Amount, map = "NZ") %>%
         e_visual_map(
-          Oranges,
+          Amount,
           top = "20%",
           left = "0%",
           inRange = list(color = c("#3366FF","#6699FF", "#66CCFF", "#33CCFF")),
@@ -97,49 +104,10 @@ server = function(input, output, session) {
                 }else{
                 return value.toLocaleString()
                 }
-            }")) %>%
-        e_tooltip(formatter = htmlwidgets::JS("
-                         function(params){
-                        return('<strong>' + params.name +
-                     '</strong><br />Total: ' +  echarts.format.addCommas(params.value)) + ' oranges'}")) %>%
-        e_title(
-          text = "Oranges grouped by year and region",
-          subtext = "Choose a year and hover over the map for more information") %>%
-        e_text_style(
-          fontFamily = "monospace"
-        )
+            }"))
     })
     
-    output$myChart <- renderEChart({
-      yeardata <- data_by_region[data_by_region$Year == input$year, ]
-
-      top5dat <- as.data.frame(yeardata) %>% top_n(5)
-
-      top5dat <- data.frame(top5dat)
-
-      names(top5dat) <- c('Family', 'name', 'lng', 'lat', 'Year', 'value')
-
-      echartr(NULL, type='map_world', subtype='New Zealand') %>%
-        addMP(series='Top 5',
-              data=top5dat,
-              symbol='pin',
-              symbolSize=JS('function (v) {return 10 + v/50;}'),
-              effect=list(show=TRUE),
-              itemStyle = list(normal = itemStyle(color = "#EE82EE"))
-        ) %>%
-        addGeoCoord(top5dat[,c('name', 'lng', 'lat')]) %>%
-        setToolbox(show = FALSE) %>%
-        setSeries(hoverable=FALSE, itemStyle=list(
-          normal=itemStyle(
-            labelStyle = labelStyle(color="#EE82EE"),
-            borderColor='rgba(100,149,237,1)', borderWidth=0.5,
-            areaStyle=areaStyle(color='#1b1b1b')))) %>%
-        setLegend(show = FALSE) %>%
-        setTitle('Advanced map', 'Fictious Data', pos=11) %>%
-        setTooltip(textStyle = textStyle(fontFamily="monospace"),
-                   formatter=JS('function (params) {
-  return params.seriesName + "<br/>" + params.name + ": " + params.value + " oranges" }'))
-    })
+    
 }
 
 shinyApp(ui, server)

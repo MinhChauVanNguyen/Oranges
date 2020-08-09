@@ -360,8 +360,10 @@ code {
   color:red;
 }
 
+/* value-boxes */
 .small-box {
   background-color: #87CEFA	 !important;
   border-radius: 1vh !important; 
   border-color: #D20000 !important;
 }
+

@@ -12,11 +12,13 @@ tabPanel("Results", value = 1,
                                collapsible = TRUE, closable = FALSE, status = "info",
                                "This dashboard consists of a", tags$b("Result"), 
                                "tab which displays the statistical forecasting results, and two other tabs which display 
-                     details of the statistical forecasting implementation using the",
+                                details of the statistical forecasting implementation using the",
                                tags$b("ARIMA"), "and", tags$b("Regression"),
-                               "methods. Forecasting is performed monthly to capture seasonal patterns. This page shows the 
-                     historical number of oranges recorded at monthly intervals. You can view the forecasting results 
-                     in tabular forms by using the sidebar menu."))),
+                               "methods. Forecasting is performed monthly to capture seasonal patterns.
+                                In the", tags$b("Regression"), "tab also included a feature which helps predicting the average
+                                vitamin C from oranges for each family member. On the right is a review of the
+                                historical number of oranges grouped by year and family/region as shown on the New Zealand map. You can view the forecasting results 
+                                in tabular forms by using the sidebar menu."))),
                          div(style = "display:inline-block;margin-left:35px;", 
                              fluidRow(img(src = "oraange.png", height = "40px"),
                                       img(src = "oraaange.png", height = "40px"),

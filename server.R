@@ -45,7 +45,7 @@ server <- function(input, output, session){
   
   output$footer <- renderText({
     if(USER$login == TRUE){
-      paste("<b><span style='color:#0099CC;'>Under Development</span></b>.","Last Updated on 16/07/2020.")
+      paste("<b><span style='color:#0099CC;'>Under Development</span></b>.","Last Updated on 09/08/2020.")
     }else{
       return()
     }

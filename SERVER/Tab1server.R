@@ -35,7 +35,7 @@ tsdata <- reactive({
 output$YEARS <- renderUI({
   selectInput(inputId = "year", 
               label = "pick a year",
-              selected = "2015",
+              selected = "2018",
               choices = unique(factor(data_by_region$Year)))
 })
 
@@ -44,7 +44,9 @@ output$MAP <- renderEcharts4r({
   data_by_year <- data.frame(data_by_year)
   data_by_year$Region <- factor(data_by_year$Region)
   
-  data_by_year %>%
+  e_common(font_family = "monospace")
+  
+  map <- data_by_year %>%
     e_charts(Region) %>%
     e_map_register("NZ", nz_json) %>%
     e_map(Oranges, map = "NZ") %>%
@@ -52,13 +54,14 @@ output$MAP <- renderEcharts4r({
       Oranges,
       top = "20%",
       left = "0%",
-      inRange = list(color = c("#3366FF","#6699FF", "#66CCFF", "#33CCFF")),
+      inRange = list(color = c("hotpink", "#3366FF","#6699FF", "#66CCFF", "#33CCFF")),
       type = "piecewise",
       splitList = list(
         list(min = 300),
         list(min = 250, max = 300),
         list(min = 100, max = 250),
-        list(value = 0, label = "None")
+        list(value = 1, label = "None"),
+        list(value = 0, label = "Top 5")
       ),
       formatter = htmlwidgets::JS("function(value, index, values){
                 if(index == 'Infinity'){
@@ -75,10 +78,24 @@ output$MAP <- renderEcharts4r({
                      '</strong><br />Total: ' +  echarts.format.addCommas(params.value)) + ' oranges'}")) %>%
     e_title(
       text = "Oranges grouped by year and region",
-      subtext = "Choose a year and hover over the map for more information") %>%
-    e_text_style(
-      fontFamily = "monospace"
-    )
+      subtext = "Choose a year and hover over the map for more information")
+  
+  newdata <- data_by_year %>% top_n(5)
+  
+  for(i in 1:nrow(newdata)){
+    minh <- list(value = newdata$Name[i], coord = c(newdata$long[i], newdata$lat[i]))
+    map <- map %>% e_mark_point(data = minh,
+                                symbolSize = c(40, 40),
+                                label = list(fontSize = 10, color = "black", fontWeight = "bolder"),
+                                itemStyle = list(
+                                  color = "#ff61b6",
+                                  borderColor = "hotpink",
+                                  opacity = 0.7
+                                ))
+    
+    
+  }
+  map
 })
 
 

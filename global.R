@@ -261,7 +261,7 @@ highValue <- function(datafrme, year){
 # NZ map
 
 # grouped by region and year
-data_by_region <- group_by(orange, Name, Region, Year) %>%
+data_by_region <- group_by(orange, Name, Region, long, lat, Year) %>%
   summarise(Oranges = sum(Total))
 
 nz_file <- system.file("New_Zealand.json", package = "echarts4r.maps")
@@ -276,7 +276,6 @@ names <- nz_json$features %>%
 island_index <- grep("Chatham", names)
 
 nz_json$features[[island_index]] <- NULL
-
 
 ############################### Theme for residual plots #####################################
 

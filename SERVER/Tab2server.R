@@ -60,7 +60,7 @@ observeEvent(input$HideFlow,{
   if(input$HideFlow %% 2 == 1) {
     txt <- "Hide Flowchart"
   } else {
-    txt <- "Advanced Flowchart"
+    txt <- "Show Flowchart"
   }
   updateActionButton(session, "HideFlow", label = txt)
 })

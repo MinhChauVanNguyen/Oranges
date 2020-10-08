@@ -62,25 +62,38 @@ options(warn = -1)
 output$legendplot <- renderPlotly({
   grpnames <- c("One", "Two", "Three")
   xval <- as.factor(c(100, 101, 102, 103, 104))
-  frame <- merge(grpnames, xval, all = T)
+  frame <- merge(grpnames, xval, all = TRUE)
 
   yval <- rep(5, 15)
   df <- tbl_df(cbind(frame, yval))
   colnames(df) <- c("GroupName", "X", "Y")
-
+  
   ax <- list(
     title = "",
     zeroline = FALSE,
-    showline = FALSE,
     showticklabels = FALSE,
-    showgrid = FALSE
+    showgrid = FALSE,
+    mirror = TRUE,
+    showline =TRUE
   )
+  
+  ay <- list(
+    title = "",
+    zeroline = FALSE,
+    showticklabels = FALSE,
+    showgrid = TRUE,
+    mirror = TRUE,
+    showline =TRUE,
+    range = c(0, 15)
+  )
+  
+  
+  marker_style <- list(line = list(width = 4, color = 'rgb(0, 0, 0)'))
   
   p <- df %>% group_by(X) %>% arrange(GroupName) %>% mutate(Y = cumsum(Y)) %>%
     plot_ly(type = 'scatter', x = ~X, y = ~Y, color = ~GroupName, colors = c("#00CCFF", "#33FF00", "black"),
-            mode = 'lines', alpha = 0.2, fill = 'tonexty', hoverinfo = 'none') %>%
-    layout(xaxis = ax, yaxis = ax, showlegend = FALSE,
-           #xaxis_title = "x Axis Title",
+            mode = 'lines', alpha = 0.2, fill = 'tonexty', hoverinfo = 'none', marker = marker_style) %>%
+    layout(xaxis = ax, yaxis = ay, showlegend = FALSE,
            font = list(family = "monospace"),
            margin = list(l = 0, r = 0, b = 0, t = 0, pad = 0),
            #autosize = FALSE,  paper_bgcolor="LightSteelBlue",

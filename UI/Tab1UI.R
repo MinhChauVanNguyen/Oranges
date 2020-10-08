@@ -57,7 +57,11 @@ tabPanel("Results", value = 1,
                          ),
                          div(style="margin-bottom:-30px;", fluidRow(echarts4rOutput(outputId = "MAP")))
               )
-             )),
+             ),
+             br(),
+             br(),
+             hr(),
+             ),
              tabItem(tabName = "tabTwo", 
                      br(),
                      div(style = "margin-left:50px;",
@@ -94,6 +98,7 @@ tabPanel("Results", value = 1,
                                     #highchartOutput(outputId = "hchart", height = "250px", width = "100%")))
                       )
                      ),
+                     br(),
                      br()
              ),
              tabItem(tabName = "tabThree", 
@@ -125,8 +130,19 @@ tabPanel("Results", value = 1,
                        column(6, div(id = "table2", style = "font-size:12px;", DT::dataTableOutput(outputId = "TABLE2", width = "90%") %>% withSpinner())),
                        column(6, div(id = "table3", style = "font-size:12px;", DT::dataTableOutput(outputId = "TABLE3", width = "90%")))
                      ),
+                     br(),
                      br()
-              )
+              ),
+           tabItem(tabName = "tabFour", 
+                   br(),
+                   fluidRow(column(6, offset = 3, 
+                    div(class = "minh_box", 
+                        div(style = "margin-bottom:-5px;text-align:center;font-weight:bold;font-size:20px!important;","To-do-list"),
+                        hr(),
+                        htmlOutput(outputId = "todolist")),
+                    br(),
+                    br()
+            )))
          ),
          hr()
 )

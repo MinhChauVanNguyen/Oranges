@@ -6,7 +6,8 @@ output$menu <- renderMenu({
   sidebarMenu(id = "sidebarmenu", 
               menuItem("Dashboard Summary", tabName = "tabOne", icon = icon("stats", lib = "glyphicon"), selected = TRUE),
               menuItem("Descriptive Stats", tabName = "tabTwo", icon = icon("table")),
-              menuItem("Results", tabName = "tabThree", icon = icon("chart-line"))
+              menuItem("Results", tabName = "tabThree", icon = icon("chart-line")),
+              menuItem("To-do-list", tabName = "tabFour", icon = icon("brain"))
   )
 })
 
@@ -330,5 +331,10 @@ output$TABLE3 <- DT::renderDataTable(
                )
 )
 
+output$todolist <- renderUI(
+  HTML(paste("<ol>", "<li>", "Modify the hover text for NZ map markers in Dashboard summary using Java Script", "</li>",
+             "<li>", "Change font family of MathJax equation in Regression Model tab", "</li>", 
+             "<li>", "Change font family of date hover label for Line chart in Regression Model tab", "</li>", "</ol>"))
+)
 
 

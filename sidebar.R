@@ -15,6 +15,9 @@ output$sidebar <- renderUI({
       conditionalPanel(condition = "input.tabs=='1' && input.sidebarmenu=='tabThree'",
                        h4("Time Series Analysis")
       ),
+      conditionalPanel(condition = "input.tabs=='1' && input.sidebarmenu=='tabFour'",
+                       h4("Time Series Analysis")
+      ),
       conditionalPanel(condition = "input.tabs=='1'",
                        br(),
                        sidebarMenu(sidebarMenuOutput(outputId = "menu")),

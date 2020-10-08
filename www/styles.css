@@ -303,7 +303,7 @@ div.MathJax_Display{
 }
 
 hr{
-  border-top:2px solid;
+  border-top:1px solid;
 }
 
 /* login page wrong password message */
@@ -365,5 +365,21 @@ code {
   background-color: #87CEFA	 !important;
   border-radius: 1vh !important; 
   border-color: #D20000 !important;
+}
+
+.hovertext text {
+  font-family: monospace !important;
+}
+
+
+/* top right bottom left */
+
+.minh_box {
+  width: 350px;
+  padding: 10px 10px 20px 10px;
+  border: 1px solid #BFBFBF;
+  background-color: white;
+  border-radius:5px;
+  box-shadow: 10px 10px 5px #aaaaaa;
 }
 
